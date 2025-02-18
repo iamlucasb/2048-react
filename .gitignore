@@ -1,0 +1,55 @@
+# 📂 Node.js
+node_modules/
+dist/
+.vite/
+.cache/
+*.log
+*.gz
+
+# ⚙️ Environnements et configurations locales
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 💻 Systèmes d'exploitation
+.DS_Store   # macOS
+Thumbs.db   # Windows
+
+# 🔧 Éditeurs et outils de développement
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# 📦 Dépendances de package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 🚀 Déploiement (ex: Netlify, Vercel)
+.netlify/
+.vercel/
+out/
+
+# 🚀 Build et cache spécifiques à React/Vite
+*.cache
+*.esm-cache
+*.rpt2_cache/
+*.parcel-cache/
+coverage/
+
+# ⚙️ Logs et fichiers de debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+debug.log
+
+# 📄 Historique et fichiers temporaires
+.history/
+*.bak
