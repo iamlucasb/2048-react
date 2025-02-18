@@ -26,25 +26,6 @@ Il s'agit avant tout d'un projet d'apprentissage, me permettant d'approfondir me
 - **Sauvegarde de la progression** pour reprendre une partie en cours.
 - **Design responsive** pour une jouabilité optimisée sur mobile et desktop.
 
-## 📥 Installation et exécution
-
-1. **Cloner le projet** :
-   \`\`\`sh
-   git clone https://github.com/lucasbossard/2048-react.git
-   cd 2048-react
-   \`\`\`
-
-2. **Installer les dépendances** :
-   \`\`\`sh
-   npm install
-   \`\`\`
-
-3. **Lancer le serveur de développement** :
-   \`\`\`sh
-   npm run dev
-   \`\`\`
-   Puis ouvrez [http://localhost:5173](http://localhost:5173) dans votre navigateur.
-
 ## 📜 Licence
 
 Projet libre d'utilisation, développé dans un but d'apprentissage.
