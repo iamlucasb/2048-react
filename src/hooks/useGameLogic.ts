@@ -36,10 +36,16 @@ const useGameLogic = (size = 4) => {
    * @param arrow
    */
   const handleMove = (arrow: string): void => {
-    let newGrid = [...grid];
+    const newGrid = grid.map((tile) => ({ ...tile }));
+
+    for (let i = 0; i < newGrid.length; i++) {
+      newGrid[i].isNew = false;
+      newGrid[i].isMerged = false;
+    }
 
     const isColumn = arrow === 'ArrowUp' || arrow === 'ArrowDown';
     const isReverse = arrow === 'ArrowRight' || arrow === 'ArrowDown';
+    let canAddNewTile: boolean = false;
 
     for (let i = 0; i < size; i++) {
       let line: ITile[] = [];
@@ -53,23 +59,27 @@ const useGameLogic = (size = 4) => {
       // Gestion de l'inversion
       line = isReverse ? line.reverse() : line;
 
-      let nonZeroIndex = 0;
-      // Déplace tous les éléments non nuls à l'avant
-      for (let i = 0; i < line.length; i++) {
-        if (line[i].value !== 0) {
-          [line[nonZeroIndex], line[i]] = [line[i], line[nonZeroIndex]];
-          nonZeroIndex++;
-        }
+      let tmpLine = moveZeroTile(line);
+      if (hasChanged(line, tmpLine)) {
+        canAddNewTile = true;
       }
+      line = tmpLine;
 
       // Gestion bloque identique collé
       for (let k = 0; k < line.length; k++) {
-        if (line[k].value === line[k + 1]?.value) {
+        if (line[k].value === line[k + 1]?.value && line[k].value > 0) {
           line[k].value = line[k].value * 2;
           line[k].isMerged = true;
           line[k + 1].value = 0;
+          canAddNewTile = true;
         }
       }
+
+      tmpLine = moveZeroTile(line);
+      if (hasChanged(line, tmpLine)) {
+        canAddNewTile = true;
+      }
+      line = tmpLine;
 
       // Inversion avant l'ajout
       line = isReverse ? line.reverse() : line;
@@ -82,10 +92,31 @@ const useGameLogic = (size = 4) => {
     }
 
     // Ajout d'une nouvelle tuile si il y a eu un mouvement
-    if (JSON.stringify(newGrid) !== JSON.stringify(grid)) {
+    if (canAddNewTile) {
       addRandomTile(newGrid);
     }
+
     setGrid([...newGrid]);
+  };
+
+  const hasChanged = (line1: ITile[], line2: ITile[]): boolean => {
+    return line1.some((tile, index) => tile.value !== line2[index].value);
+  };
+
+  const moveZeroTile = (line: ITile[]): ITile[] => {
+    let nonZeroIndex = 0;
+    const newLine: ITile[] = [...line];
+    // Déplace tous les éléments non nuls à l'avant
+    for (let i = 0; i < newLine.length; i++) {
+      if (newLine[i].value !== 0) {
+        [newLine[nonZeroIndex], newLine[i]] = [
+          newLine[i],
+          newLine[nonZeroIndex],
+        ];
+        nonZeroIndex++;
+      }
+    }
+    return newLine;
   };
 
   /**

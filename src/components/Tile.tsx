@@ -21,6 +21,8 @@ const Tile = ({ tile }: Props) => {
         'bg-purple-400': tile.value === 512,
         'bg-blue-500': tile.value === 1024,
         'bg-cyan-500': tile.value >= 2048,
+        'animate-merge': tile.isMerged,
+        'animate-pop': tile.isNew,
       })}>
       <p className="text-xl text-white font-bold">
         {tile.value > 0 ? tile.value : ''}

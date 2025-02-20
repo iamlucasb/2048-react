@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 
-:root {
-  --keyframes-pop: {
+@theme {
+  --animate-pop: pop 0.3s ease-out;
+  @keyframes pop {
     0% {
       transform: scale(0);
       opacity: 0;
@@ -12,5 +13,19 @@
     }
   }
 
-  --animation-pop: pop 0.2s ease-out;
+  --animate-merge: merge 0.3s ease-out;
+  @keyframes merge {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
 }
