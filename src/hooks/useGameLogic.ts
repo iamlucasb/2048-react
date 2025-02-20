@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ITile } from '../models/ITile';
 
 /**
  * Logique de jeu
@@ -6,10 +7,10 @@ import { useEffect, useState } from 'react';
  * @returns
  */
 const useGameLogic = (size = 4) => {
-  const [grid, setGrid] = useState<number[]>(Array(size * size).fill(0));
+  const [grid, setGrid] = useState<ITile[]>([]);
 
   useEffect(() => {
-    setGrid(initGameBoard());
+    initGameBoard();
   }, []);
 
   /**
@@ -41,7 +42,7 @@ const useGameLogic = (size = 4) => {
     const isReverse = arrow === 'ArrowRight' || arrow === 'ArrowDown';
 
     for (let i = 0; i < size; i++) {
-      let line: number[] = [];
+      let line: ITile[] = [];
 
       // Récupération des lignes
       for (let j = 0; j < size; j++) {
@@ -52,24 +53,21 @@ const useGameLogic = (size = 4) => {
       // Gestion de l'inversion
       line = isReverse ? line.reverse() : line;
 
-      // Déplacement des lignes
-      line = line.filter((e) => e !== 0);
-
-      // Gestion bloque identique collé
-      for (let k = 0; k < line.length; k++) {
-        if (line[k] === line[k + 1]) {
-          line[k] = line[k] * 2;
-          line[k + 1] = 0;
+      let nonZeroIndex = 0;
+      // Déplace tous les éléments non nuls à l'avant
+      for (let i = 0; i < line.length; i++) {
+        if (line[i].value !== 0) {
+          [line[nonZeroIndex], line[i]] = [line[i], line[nonZeroIndex]];
+          nonZeroIndex++;
         }
       }
 
-      // Suppression des espaces
-      line = line.filter((e) => e !== 0);
-
-      // Rajout des 0 dans espaces vides
-      for (let m = 0; m < size; m++) {
-        if (!(line[m] > 0)) {
-          line[m] = 0;
+      // Gestion bloque identique collé
+      for (let k = 0; k < line.length; k++) {
+        if (line[k].value === line[k + 1]?.value) {
+          line[k].value = line[k].value * 2;
+          line[k].isMerged = true;
+          line[k + 1].value = 0;
         }
       }
 
@@ -85,7 +83,7 @@ const useGameLogic = (size = 4) => {
 
     // Ajout d'une nouvelle tuile si il y a eu un mouvement
     if (JSON.stringify(newGrid) !== JSON.stringify(grid)) {
-      newGrid[getRandomEmptyIndex(newGrid)] = getRandomBaseNumber();
+      addRandomTile(newGrid);
     }
     setGrid([...newGrid]);
   };
@@ -94,10 +92,33 @@ const useGameLogic = (size = 4) => {
    * Initalisation de la grid
    * @returns
    */
-  const initGameBoard = (): number[] => {
-    grid[getRandomEmptyIndex(grid)] = getRandomBaseNumber();
-    grid[getRandomEmptyIndex(grid)] = getRandomBaseNumber();
-    return [...grid];
+  const initGameBoard = (): void => {
+    let newGrid: ITile[] = [];
+
+    // Remplissage de la grille avec des tuiles vides
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
+        newGrid.push({
+          id: `${row}-${col}`, // Identifiant basé sur les coordonnées
+          value: 0, // 0 signifie une case vide
+          row,
+          col,
+          isNew: false,
+          isMerged: false,
+        });
+      }
+    }
+
+    addRandomTile(newGrid);
+    addRandomTile(newGrid);
+
+    setGrid(newGrid);
+  };
+
+  const addRandomTile = (grid: ITile[]): void => {
+    const tile: ITile = grid[getRandomEmptyIndex(grid)];
+    tile.value = getRandomBaseNumber();
+    tile.isNew = true;
   };
 
   /**
@@ -105,10 +126,10 @@ const useGameLogic = (size = 4) => {
    * @param newGrid
    * @returns
    */
-  const getRandomEmptyIndex = (newGrid: number[]): number => {
+  const getRandomEmptyIndex = (newGrid: ITile[]): number => {
     let randomIndex = Math.floor(Math.random() * 16);
 
-    if (newGrid[randomIndex] !== 0) {
+    if (newGrid[randomIndex].value !== 0) {
       randomIndex = getRandomEmptyIndex(newGrid);
     }
     return randomIndex;
@@ -123,7 +144,7 @@ const useGameLogic = (size = 4) => {
     return random > 20 ? 2 : 4;
   };
 
-  return { grid, initGameBoard };
+  return { grid };
 };
 
 export default useGameLogic;
