@@ -2,14 +2,24 @@ import React, { useEffect, useRef } from 'react';
 import Tile from './Tile';
 import useGameLogic from '../hooks/useGameLogic';
 import { wrapGrid } from 'animate-css-grid';
+import { useSwipeable } from 'react-swipeable';
 
 /**
  * Plateau de jeu
  * @returns
  */
 const GameBoard = () => {
-  const { gameBoard } = useGameLogic();
+  const { gameBoard, handleMove } = useGameLogic();
   const gridRef = useRef<HTMLDivElement>(null);
+
+  // Gestion du touch
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => handleMove('ArrowLeft'),
+    onSwipedRight: () => handleMove('ArrowRight'),
+    onSwipedUp: () => handleMove('ArrowUp'),
+    onSwipedDown: () => handleMove('ArrowDown'),
+    trackMouse: true,
+  });
 
   useEffect(() => {
     if (gridRef.current) {
@@ -21,8 +31,29 @@ const GameBoard = () => {
     }
   }, []);
 
+  // Suppression du scroll
+  useEffect(() => {
+    const preventScroll = (e) => {
+      e.preventDefault();
+    };
+
+    const boardElement = gridRef.current;
+    if (boardElement) {
+      boardElement.addEventListener('touchmove', preventScroll, {
+        passive: false,
+      });
+    }
+    return () => {
+      if (boardElement) {
+        boardElement.removeEventListener('touchmove', preventScroll);
+      }
+    };
+  }, []);
+
   return (
-    <div className="grid grid-cols-1 grid-rows-1">
+    <div
+      {...swipeHandlers}
+      className="grid grid-cols-1 grid-rows-1">
       <div className="bg-gray-900 p-2 rounded-md grid grid-cols-4 grid-rows-4 gap-2 col-start-1 row-start-1">
         {Array(16)
           .fill(0)

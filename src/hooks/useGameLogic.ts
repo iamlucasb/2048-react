@@ -180,7 +180,7 @@ const useGameLogic = (size = 4) => {
     return random > 20 ? 2 : 4;
   };
 
-  return { gameBoard };
+  return { gameBoard, handleMove };
 };
 
 export default useGameLogic;
