@@ -23,9 +23,14 @@ const Tile = ({ tile }: Props) => {
         'bg-cyan-500': tile.value >= 2048,
         'animate-merge': tile.isMerged,
         'animate-pop': tile.isNew,
-      })}>
+        collapse: tile.value === 0,
+      })}
+      style={{
+        gridColumnStart: tile.col + 1,
+        gridRowStart: tile.row + 1,
+      }}>
       <p className="text-xl text-white font-bold">
-        {tile.value > 0 ? tile.value : ''}
+        {tile.value ? tile.value : ''}
       </p>
     </div>
   );
