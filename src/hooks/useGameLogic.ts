@@ -8,6 +8,7 @@ import { ITile } from '../models/ITile';
  */
 const useGameLogic = (size = 4) => {
   const [gameBoard, setGameBoard] = useState<ITile[]>([]);
+  const [score, setScore] = useState<number>(0);
 
   useEffect(() => {
     initGameBoard();
@@ -38,6 +39,7 @@ const useGameLogic = (size = 4) => {
       setGameBoard((prevGameBoard) => {
         // Création d'une copie de la grille actuelle
         const newGrid = prevGameBoard.map((tile) => ({ ...tile }));
+        let roundScore = 0;
 
         // Réinitialisation des flags d'animation
         newGrid.forEach((tile) => {
@@ -77,6 +79,9 @@ const useGameLogic = (size = 4) => {
               line[k].isMerged = true;
               line[k + 1].value = 0;
               canAddNewTile = true;
+
+              // Mise à jour du score
+              roundScore = roundScore + line[k].value;
             }
           }
 
@@ -110,6 +115,9 @@ const useGameLogic = (size = 4) => {
             setGameBoard([...newGrid]);
           }, 200);
         }
+
+        // Mise à jour du score
+        setScore((prev) => prev + roundScore);
 
         return newGrid;
       });
@@ -180,7 +188,7 @@ const useGameLogic = (size = 4) => {
     return random > 20 ? 2 : 4;
   };
 
-  return { gameBoard, handleMove };
+  return { gameBoard, score, handleMove };
 };
 
 export default useGameLogic;
