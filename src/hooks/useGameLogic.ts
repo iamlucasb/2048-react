@@ -9,6 +9,7 @@ import { ITile } from '../models/ITile';
 const useGameLogic = (size = 4) => {
   const [gameBoard, setGameBoard] = useState<ITile[]>([]);
   const [score, setScore] = useState<number>(0);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
   useEffect(() => {
     initGameBoard();
@@ -28,6 +29,60 @@ const useGameLogic = (size = 4) => {
     const tile: ITile = grid[getRandomEmptyIndex(grid)];
     tile.value = getRandomBaseNumber();
     tile.isNew = true;
+  };
+
+  /**
+   * Vérifie si le jeu est terminé.
+   * @param gameBoard
+   * @returns
+   */
+  const checkIsGameOver = (gameBoard: ITile[]): boolean => {
+    for (let i = 0; i < size; i++) {
+      // Vérification des colonnes
+      let line: ITile[] = [];
+      for (let j = 0; j < size; j++) {
+        const index = i + size * j;
+        line.push(gameBoard[index]);
+      }
+
+      if (checkCanMove(line)) {
+        return false;
+      }
+
+      // Vérification des lignes
+      line = [];
+      for (let j = 0; j < size; j++) {
+        const index = j + size * i;
+        line.push(gameBoard[index]);
+      }
+
+      if (checkCanMove(line)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  /**
+   * Vérifie si un mouvement est possible dans une ligne.
+   * @param line
+   * @returns
+   */
+  const checkCanMove = (line: ITile[]): boolean => {
+    // Si la ligne contient au moins un 0, on peut bouger
+    if (line.some((tile) => tile.value === 0)) {
+      return true;
+    }
+
+    // Vérifier s'il existe deux tuiles adjacentes avec la même valeur
+    for (let i = 0; i < line.length - 1; i++) {
+      if (line[i].value === line[i + 1].value) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   /**
@@ -113,6 +168,14 @@ const useGameLogic = (size = 4) => {
           setTimeout(() => {
             addRandomTile(newGrid);
             setGameBoard([...newGrid]);
+
+            // Vérification du gameOver
+            if (
+              newGrid.filter((t) => t.value === 0).length === 0 &&
+              checkIsGameOver(newGrid)
+            ) {
+              setIsGameOver(true);
+            }
           }, 200);
         }
 
@@ -122,7 +185,7 @@ const useGameLogic = (size = 4) => {
         return newGrid;
       });
     },
-    [size, moveZeroTile, hasChanged, addRandomTile]
+    [size, moveZeroTile, hasChanged, addRandomTile, checkIsGameOver]
   );
 
   // Attacher l'écouteur une seule fois
@@ -187,8 +250,7 @@ const useGameLogic = (size = 4) => {
     const random = Math.floor(Math.random() * 100);
     return random > 20 ? 2 : 4;
   };
-
-  return { gameBoard, score, handleMove };
+  return { gameBoard, score, handleMove, isGameOver };
 };
 
 export default useGameLogic;

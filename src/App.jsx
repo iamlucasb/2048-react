@@ -1,9 +1,10 @@
 import GameBoard from './components/GameBoard';
+import GameOver from './components/GameOver';
 import Score from './components/Score';
 import useGameLogic from './hooks/useGameLogic';
 
 function App() {
-  const { gameBoard, score, handleMove } = useGameLogic();
+  const { gameBoard, score, handleMove, isGameOver } = useGameLogic();
 
   return (
     <>
@@ -15,10 +16,14 @@ function App() {
             </h1>
             <Score score={score} />
           </div>
-          <GameBoard
-            gameBoard={gameBoard}
-            handleMove={handleMove}
-          />
+          {/* Zone de jeux */}
+          <div className="grid grid-cols-1 grid-rows-1">
+            <GameBoard
+              gameBoard={gameBoard}
+              handleMove={handleMove}
+            />
+            <GameOver isGameOver={isGameOver} />
+          </div>
         </div>
       </div>
     </>
