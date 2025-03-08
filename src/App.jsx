@@ -22,7 +22,10 @@ function App() {
               gameBoard={gameBoard}
               handleMove={handleMove}
             />
-            <GameOver isGameOver={isGameOver} />
+            <GameOver
+              isGameOver={isGameOver}
+              score={score}
+            />
           </div>
         </div>
       </div>
