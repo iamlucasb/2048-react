@@ -250,7 +250,15 @@ const useGameLogic = (size = 4) => {
     const random = Math.floor(Math.random() * 100);
     return random > 20 ? 2 : 4;
   };
-  return { gameBoard, score, handleMove, isGameOver };
+
+  const resetGame = () => {
+    console.log('resetGame');
+    setScore(0);
+    setIsGameOver(false);
+    initGameBoard();
+  };
+
+  return { gameBoard, score, handleMove, isGameOver, resetGame };
 };
 
 export default useGameLogic;

@@ -57,7 +57,7 @@ const GameBoard = ({ gameBoard, handleMove }: Props) => {
   return (
     <div
       {...swipeHandlers}
-      className="grid grid-cols-1 grid-rows-1 col-start-1 row-start-1">
+      className="grid grid-cols-1 grid-rows-1">
       <div className="bg-gray-900 p-2 rounded-md grid grid-cols-4 grid-rows-4 gap-2 col-start-1 row-start-1">
         {Array(16)
           .fill(null)

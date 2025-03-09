@@ -1,47 +1,78 @@
+import { useEffect, useState } from 'react';
 import GameBoard from './components/GameBoard';
-import GameOver from './components/GameOver';
 import Score from './components/Score';
+import WelcomeScreen from './components/WelcomeScreen';
 import useGameLogic from './hooks/useGameLogic';
-import clsx from 'clsx';
+import Title from './components/ui/Title';
+import { useOverlay } from './context/OverlayProvider';
+import GameOverModal from './components/modals/GameOverModal';
+import ModalPortal from './components/modals/ModalPortal';
 
 function App() {
-  const { gameBoard, score, handleMove, isGameOver } = useGameLogic();
+  const [gameStarted, setGameStarted] = useState(false);
+  const [username, setUsername] = useState('');
+  const { gameBoard, score, handleMove, isGameOver, resetGame } =
+    useGameLogic();
+
+  const handleStartGame = (playerName) => {
+    setUsername(playerName);
+    setGameStarted(true);
+  };
+
+  const { openOverlay, closeOverlay } = useOverlay();
+
+  const handleReturnToHome = () => {
+    setGameStarted(false);
+    resetGame();
+    closeOverlay();
+  };
+
+  const handleReplay = () => {
+    resetGame();
+    closeOverlay();
+  };
+
+  useEffect(() => {
+    if (isGameOver) {
+      openOverlay();
+    }
+  }, [isGameOver, openOverlay]);
 
   return (
-    <>
-      {/* Overlay qui recouvre toute l'application quand le jeu est terminé */}
-      <div
-        className={clsx(
-          'fixed inset-0 bg-black z-40 transition-opacity duration-500',
-          {
-            'opacity-0 invisible': !isGameOver,
-            'opacity-60': isGameOver,
-          }
+    <div className="grid grid-cols-1 grid-rows-1">
+      <div className="col-start-1 row-start-1 flex flex-col h-screen items-center justify-center relative">
+        {!gameStarted ? (
+          <WelcomeScreen onStartGame={handleStartGame} />
+        ) : (
+          <>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between items-center gap-2">
+                <Title
+                  text="2048"
+                  className="w-full text-center bg-gray-800 rounded-lg h-full flex items-center justify-center"
+                />
+                <Score score={score} />
+              </div>
+              {/* Zone de jeux */}
+              <GameBoard
+                gameBoard={gameBoard}
+                handleMove={handleMove}
+              />
+            </div>
+          </>
         )}
-      />
-
-      <div className="flex flex-col h-screen items-center justify-center bg-slate-700 relative">
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-white w-full text-center">
-              2048
-            </h1>
-            <Score score={score} />
-          </div>
-          {/* Zone de jeux */}
-          <div className="grid grid-cols-1 grid-rows-1">
-            <GameBoard
-              gameBoard={gameBoard}
-              handleMove={handleMove}
-            />
-            <GameOver
-              isGameOver={isGameOver}
-              score={score}
-            />
-          </div>
-        </div>
       </div>
-    </>
+      
+      {/* Game Over Modal */}
+      <ModalPortal condition={isGameOver}>
+        <GameOverModal
+          score={score}
+          username={username}
+          onReturnToHome={handleReturnToHome}
+          onReplay={handleReplay}
+        />
+      </ModalPortal>
+    </div>
   );
 }
 
