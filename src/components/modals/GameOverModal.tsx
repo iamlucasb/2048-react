@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Button from '../ui/Button';
 import GradientBorder from '../ui/GradientBorder';
 import Title from '../ui/Title';
+import { addScore } from '../../firebase/scoreService';
 import { useOverlay } from '../../context/OverlayProvider';
 
 interface GameOverModalProps {
@@ -22,6 +23,20 @@ const GameOverModal: React.FC<GameOverModalProps> = ({
 }) => {
   const { closeOverlay } = useOverlay();
 
+  useEffect(() => {
+    const saveScore = async () => {
+      if (score > 0 && username) {
+        try {
+          await addScore(username, score);
+          console.log('Score sauvegardé avec succès');
+        } catch (error) {
+          console.error('Erreur lors de la sauvegarde du score:', error);
+        }
+      }
+    };
+
+    saveScore();
+  }, [score, username]);
 
   const handleReplay = () => {
     onReplay();
